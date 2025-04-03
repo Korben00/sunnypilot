@@ -45,6 +45,26 @@ DeveloperPanel::DeveloperPanel(SettingsWindow *parent) : ListWidget(parent) {
   });
   addItem(experimentalLongitudinalToggle);
 
+  enableGithubRunner = new ParamControl("EnableGithubRunner", tr("Enable GitHub runner service"), tr("Enables or disables the github runner service."), "");
+  addItem(enableGithubRunner);
+
+  // error log button
+  errorLogBtn = new ButtonControl(tr("Error Log"), tr("VIEW"), tr("View the error log for sunnypilot crashes."));
+  connect(errorLogBtn, &ButtonControl::clicked, [=]() {
+    std::string txt = util::read_file("/data/community/crashes/error.log");
+    ConfirmationDialog::rich(QString::fromStdString(txt), this);
+  });
+  addItem(errorLogBtn);
+
+#ifdef SUNNYPILOT
+  hkgAngleSmoothingFactor = new OptionControlSP("HkgTuningAngleSmoothingFactor", tr("HKG Angle Smoothing Factor"), tr("HKG angle smoothing factor for sunnypilot."), "../assets/offroad/icon_blank.png", {0, 10}, 1);
+  connect(hkgAngleSmoothingFactor, &OptionControlSP::updateLabels, hkgAngleSmoothingFactor, [=]() {
+    this->updateToggles(offroad);
+  });
+  addItem(hkgAngleSmoothingFactor);
+#endif
+  
+
   // Joystick and longitudinal maneuvers should be hidden on release branches
   is_release = params.getBool("IsReleaseBranch");
 
@@ -64,6 +84,9 @@ void DeveloperPanel::updateToggles(bool _offroad) {
     if (btn != experimentalLongitudinalToggle) {
       btn->setEnabled(_offroad);
     }
+
+    auto HkgAngleSmoothingFactorValue = QString::fromStdString(params.get("HkgTuningAngleSmoothingFactor")).toDouble();
+    hkgAngleSmoothingFactor->setLabel(QString::number(HkgAngleSmoothingFactorValue / 10, 'f', 1));
   }
 
   // longManeuverToggle and experimentalLongitudinalToggle should not be toggleable if the car does not have longitudinal control
@@ -93,6 +116,8 @@ void DeveloperPanel::updateToggles(bool _offroad) {
   experimentalLongitudinalToggle->refresh();
 
   // Handle specific controls visibility for release branches
+  enableGithubRunner->setVisible(!is_release);
+  errorLogBtn->setVisible(!is_release);
   joystickToggle->setVisible(!is_release);
 
   offroad = _offroad;

@@ -16,8 +16,14 @@ private:
   Params params;
   ParamControl* adbToggle;
   ParamControl* joystickToggle;
+  ButtonControl* errorLogBtn;
   ParamControl* longManeuverToggle;
   ParamControl* experimentalLongitudinalToggle;
+  ParamControl* enableGithubRunner;
+#ifdef SUNNYPILOT
+  OptionControlSP* hkgAngleSmoothingFactor;
+#endif
+  
   bool is_release;
   bool offroad = false;
 
