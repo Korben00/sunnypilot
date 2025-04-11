@@ -94,7 +94,7 @@ LateralPanel::LateralPanel(SettingsWindowSP *parent) : QFrame(parent) {
   list->addItem(horizontal_line());
   list->addItem(vertical_space());
 
-  // HKG Angle Tunning
+  // HKG Angle Tuning
   // angleTuningToggle = new ParamControl(
   //   "AngleTuning",
   //   tr("Modular Assistive Driving System (MADS)"),
